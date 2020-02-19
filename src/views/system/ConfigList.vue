@@ -5,17 +5,17 @@
         <a-row :gutter="48">
           <a-col :md="4" :sm="12">
             <a-form-item label="参数名称">
-              <a-input placeholder="请输入" v-model="queryParam.configName"/>
+              <a-input placeholder="请输入" v-model="queryParam.filter_EQ_configName"/>
             </a-form-item>
           </a-col>
           <a-col :md="4" :sm="12">
             <a-form-item label="参数键名">
-              <a-input placeholder="请输入" v-model="queryParam.configKey"/>
+              <a-input placeholder="请输入" v-model="queryParam.filter_EQ_configKey"/>
             </a-form-item>
           </a-col>
           <a-col :md="4" :sm="12">
             <a-form-item label="系统内置">
-              <a-select placeholder="请选择" v-model="queryParam.configType" default-value="''">
+              <a-select placeholder="请选择" v-model="queryParam.filter_EQ_configType" default-value="''">
                 <a-select-option :value="''">全部</a-select-option>
                 <a-select-option :value="'Y'">是</a-select-option>
                 <a-select-option :value="'N'">否</a-select-option>
@@ -64,7 +64,7 @@
       <span slot="action" slot-scope="text, record">
         <a v-if="editEnabel" @click="handleEdit(record)">编辑</a>
         <a-divider type="vertical" />
-        <a v-if="removeEnable" @click="delByIds([record.configId])">删除</a>
+        <a v-if="removeEnable" @click="delByIds([record.id])">删除</a>
       </span>
     </s-table>
     <config-modal ref="modal" @ok="handleOk"/>
@@ -145,7 +145,19 @@ export default {
       range: null,
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        return getConfigList(Object.assign(parameter, this.queryParam))
+        const queryParam = { ...this.queryParam }
+        if (this.queryParam.filter_EQ_configType === '') {
+          delete queryParam.filter_EQ_configType
+        }
+        return getConfigList(Object.assign(parameter, queryParam))
+          .then(res => {
+            const data = res.data
+            data.pageNum = parameter.pageNum
+            data.data = data.data.map(item => {
+              return { ...item, status: `${item.status}` }
+            })
+            return data
+          })
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -184,11 +196,11 @@ export default {
     },
     delByIds (ids) {
       delConfig({ ids: ids.join(',') }).then(res => {
-        if (res.code === 0) {
-          this.$message.success(`删除成功`)
+        if (res.code === 20000) {
+          this.$message.success(res.message)
           this.handleOk()
         } else {
-          this.$message.error(res.msg)
+          this.$message.error(res.message)
         }
         this.selectedRowKeys = []
       })

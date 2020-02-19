@@ -82,7 +82,7 @@ const rootRouter = {
  */
 export const getRouterByUser = () => {
   return axios({
-    url: '/system/resources/list/user',
+    url: '/system/resources/list/user/SYSTEM',
     method: 'get',
     dataType: 'json'
     /* headers: {
@@ -167,7 +167,7 @@ export function getRootMenu (rows) {
   // 根菜单
   const rootMenu = []
   const arr = []
-  // buildtree(rows, arr, '000000')
+  buildtree(rows, arr, '000000')
   const rowss = rows.slice(0, 25)
   buildtree(rowss, arr, '000000')
   arr.forEach(row => {

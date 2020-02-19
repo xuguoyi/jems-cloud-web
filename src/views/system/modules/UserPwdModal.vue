@@ -10,14 +10,14 @@
   >
     <a-form :form="form">
       <a-form-item style="display:none">
-        <a-input v-decorator="['userId']"/>
+        <a-input v-decorator="['id']"/>
       </a-form-item>
       <a-form-item
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
         label="用户名"
       >
-        <a-input placeholder="用户名" disabled v-decorator="['loginName', {rules: [{ required: true, message: '请输入用户名' }]}]" />
+        <a-input placeholder="用户名" disabled v-decorator="['userName', {rules: [{ required: true, message: '请输入用户名' }]}]" />
       </a-form-item>
       <a-form-item
         :labelCol="labelCol"
@@ -64,7 +64,7 @@ export default {
       this.mdl = Object.assign({}, record)
       this.visible = true
       this.$nextTick(() => {
-        this.form.setFieldsValue(pick(this.mdl, 'userId', 'loginName'))
+        this.form.setFieldsValue(pick(this.mdl, 'id', 'userName'))
         // this.form.setFieldsValue({ ...record })
       })
     },
@@ -76,11 +76,11 @@ export default {
           this.confirmLoading = true
           resetPwd(values).then(res => {
             if (res.code === 0) {
-              this.$message.success(`${values.loginName}` + '重置密码成功')
+              this.$message.success(`${values.userName}` + '重置密码成功')
               // this.$emit('ok')
               this.visible = false
             } else {
-              this.$message.success(res.msg)
+              this.$message.success(res.message)
             }
           }).catch(() => {
             this.$message.error('系统错误，请稍后再试')

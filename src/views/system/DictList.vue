@@ -40,7 +40,7 @@
     <s-table
       size="default"
       ref="table"
-      rowKey="dictId"
+      rowKey="id"
       :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
       :columns="columns"
       :data="loadData"
@@ -53,7 +53,7 @@
         <a-divider type="vertical" />
         <a v-if="editEnabel" @click="dataModal(record.dictType)"><a-icon type="bars" />列表</a>
         <a-divider type="vertical" />
-        <a v-if="removeEnable" @click="delByIds([record.dictId])">删除</a>
+        <a v-if="removeEnable" @click="delByIds([record.id])">删除</a>
       </span>
     </s-table>
     <dict-modal ref="modal" @ok="handleOk" />
@@ -108,7 +108,7 @@ export default {
       columns: [
         {
           title: '字典主键',
-          dataIndex: 'dictId'
+          dataIndex: 'id'
         },
         {
           title: '字典名称',
@@ -141,7 +141,19 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        return getDictTypeList(Object.assign(parameter, this.queryParam))
+        const queryParam = { ...this.queryParam }
+        if (this.queryParam.filter_EQ_configType === '') {
+          delete queryParam.filter_EQ_configType
+        }
+        return getDictTypeList(Object.assign(parameter, queryParam))
+          .then(res => {
+            const data = res.data
+            data.pageNum = parameter.pageNum
+            data.data = data.data.map(item => {
+              return { ...item, status: `${item.status}` }
+            })
+            return data
+          })
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -179,11 +191,11 @@ export default {
     },
     delByIds (ids) {
       delDictType({ ids: ids.join(',') }).then(res => {
-        if (res.code === 0) {
-          this.$message.success(`删除成功`)
+        if (res.code === 20000) {
+          this.$message.success(res.message)
           this.handleOk()
         } else {
-          this.$message.error(res.msg)
+          this.$message.error(res.message)
         }
         this.selectedRowKeys = []
       })

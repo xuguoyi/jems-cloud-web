@@ -142,7 +142,19 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        return getDistList(Object.assign(parameter, this.queryParam))
+        const queryParam = { ...this.queryParam }
+        if (this.queryParam.filter_EQ_configType === '') {
+          delete queryParam.filter_EQ_configType
+        }
+        return getDistList(Object.assign(parameter, queryParam))
+          .then(res => {
+            const data = res.data
+            data.pageNum = parameter.pageNum
+            data.data = data.data.map(item => {
+              return { ...item, status: `${item.status}` }
+            })
+            return data
+          })
       },
       selectedRowKeys: [],
       selectedRows: [],

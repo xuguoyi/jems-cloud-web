@@ -36,12 +36,12 @@
     </div>
     <a-table
       ref="table"
-      rowKey="menuId"
+      rowKey="id"
       :pagination="pagination"
       :loading="loading"
       :columns="columns"
       :dataSource="data">
-
+      @change="handleChange"
       <span slot="menuType" slot-scope="text">
         {{ text | menuTypeFilter }}
       </span>
@@ -192,10 +192,14 @@ export default {
         }
       })
     },
+    handleChange (res) {
+      console.log('res', res)
+    },
     fetch () {
       this.loading = true
       getPermissions(Object.assign(this.queryParam)).then(res => {
-        this.data = treeData(res.rows, 'menuId')
+        console.log(res.data)
+        this.data = treeData(res.data.data, 'id')
         this.loading = false
       })
     }

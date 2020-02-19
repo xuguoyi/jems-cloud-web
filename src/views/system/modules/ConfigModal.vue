@@ -9,7 +9,7 @@
   >
     <a-form :form="form">
       <a-form-item style="display:none">
-        <a-input v-decorator="['configId']"/>
+        <a-input v-decorator="['id']"/>
       </a-form-item>
       <a-form-item
         :labelCol="labelCol"
@@ -115,7 +115,7 @@ export default {
       this.mdl = Object.assign(record)
       this.visible = true
       this.$nextTick(() => {
-        this.form.setFieldsValue(pick(this.mdl, 'configId', 'configKey', 'configName', 'configType', 'createTime', 'remark', 'configValue'))
+        this.form.setFieldsValue(pick(this.mdl, 'id', 'configKey', 'configName', 'configType', 'createTime', 'remark', 'configValue'))
       })
     },
     handleSubmit (e) {
@@ -125,12 +125,12 @@ export default {
           console.log('Received values of form: ', values)
           this.confirmLoading = true
           saveConfig(values).then(res => {
-            if (res.code === 0) {
-              this.$message.success('保存成功')
+            if (res.code === 20000) {
+              this.$message.success(res.message)
               this.$emit('ok')
               this.visible = false
             } else {
-              this.$message.success(res.msg)
+              this.$message.success(res.message)
             }
           }).catch(() => {
             this.$message.error('系统错误，请稍后再试')

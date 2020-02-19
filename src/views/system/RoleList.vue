@@ -5,12 +5,12 @@
         <a-row :gutter="48">
           <a-col :md="5" :sm="15">
             <a-form-item label="角色名称">
-              <a-input placeholder="请输入" v-model="queryParam.roleName"/>
+              <a-input placeholder="请输入" v-model="queryParam.filter_EQ_roleName"/>
             </a-form-item>
           </a-col>
           <a-col :md="5" :sm="15">
             <a-form-item label="状态">
-              <a-select placeholder="请选择" v-model="queryParam.status" default-value="0">
+              <a-select placeholder="请选择" v-model="queryParam.filter_EQ_status" default-value="0">
                 <a-select-option :value="''">全部</a-select-option>
                 <a-select-option :value="0">正常</a-select-option>
                 <a-select-option :value="1">禁用</a-select-option>
@@ -44,7 +44,7 @@
     <s-table
       size="default"
       ref="table"
-      rowKey="roleId"
+      rowKey="id"
       :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
       :columns="columns"
       :data="loadData"
@@ -73,9 +73,9 @@
       <span slot="action" slot-scope="text, record">
         <a v-if="editEnabel" @click="handleEdit(record)">编辑</a>
         <a-divider type="vertical" />
-        <a v-if="editEnabel" @click="handleScope(record)">数据权限</a>
-        <a-divider type="vertical" />
-        <a v-if="removeEnable" @click="delByIds([record.roleId])">删除</a>
+        <!-- <a v-if="editEnabel" @click="handleScope(record)">数据权限</a>
+        <a-divider type="vertical" /> -->
+        <a v-if="removeEnable" @click="delByIds([record.id])">删除</a>
       </span>
     </s-table>
     <role-modal ref="modal" @ok="handleOk" />
@@ -119,10 +119,6 @@ export default {
       // 表头
       columns: [
         {
-          title: '角色编号',
-          dataIndex: 'roleId'
-        },
-        {
           title: '角色名称',
           dataIndex: 'roleName'
         },
@@ -132,7 +128,7 @@ export default {
         },
         {
           title: '显示顺序',
-          dataIndex: 'roleSort'
+          dataIndex: 'sortNo'
         },
         {
           title: '状态',
@@ -152,7 +148,22 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        return getRoleList(Object.assign(parameter, this.queryParam)).data.data
+        const queryParam = { ...this.queryParam }
+        if (this.queryParam.filter_EQ_status === '') {
+          delete queryParam.filter_EQ_status
+        }
+        if (!this.queryParam.filter_EQ_roleName) {
+          delete queryParam.filter_EQ_roleName
+        }
+        return getRoleList(Object.assign(parameter, queryParam))
+          .then(res => {
+            const data = res.data
+            data.pageNum = parameter.pageNum
+            data.data = data.data.map(item => {
+              return { ...item, status: `${item.status}` }
+            })
+            return data
+          })
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -187,11 +198,11 @@ export default {
     },
     delByIds (ids) {
       delRole({ ids: ids.join(',') }).then(res => {
-        if (res.code === 0) {
-          this.$message.success(`删除成功`)
+        if (res.code === 20000) {
+          this.$message.success(res.message)
           this.handleOk()
         } else {
-          this.$message.error(res.msg)
+          this.$message.error(res.message)
         }
         // const difference = new Set(this.selectedRowKeys.filter(x => !new Set(ids).has(x)))
         // this.selectedRowKeys = Array.from(difference)
@@ -200,7 +211,13 @@ export default {
     },
     onChangeStatus (record) {
       record.status = record.status === '0' ? '1' : '0'
-      changRoleStatus(pick(record, 'roleId', 'status'))
+      changRoleStatus(pick(record, 'id', 'status')).then(res => {
+        if (res.code === 20000) {
+          this.$message.success(res.message)
+        } else {
+          this.$message.error(res.message)
+        }
+      })
       // 发送状态到服务器
     }
   },

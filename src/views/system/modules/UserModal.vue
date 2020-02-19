@@ -16,7 +16,7 @@
         :wrapperCol="wrapperCol"
         label="用户名"
       >
-        <a-input placeholder="用户名" v-decorator="['loginName', {rules: [{ required: true, message: '请输入用户名' }]}]" />
+        <a-input placeholder="用户名" v-decorator="['userName', {rules: [{ required: true, message: '请输入用户名' }]}]" />
       </a-form-item>
 
       <a-form-item
@@ -26,12 +26,42 @@
       >
         <a-input
           v-decorator="[
-            'userName',
+            'nickName',
             {
               rules: [{ required: true, message: '请输入昵称' }]
             }
           ]"
           placeholder="起一个名字"/>
+      </a-form-item>
+
+      <a-form-item
+        :labelCol="labelCol"
+        :wrapperCol="wrapperCol"
+        label="电话"
+      >
+        <a-input
+          v-decorator="[
+            'phone',
+            {
+              rules: [{ required: true, message: '请输入电话' }]
+            }
+          ]"
+          placeholder="输入号码"/>
+      </a-form-item>
+
+      <a-form-item
+        :labelCol="labelCol"
+        :wrapperCol="wrapperCol"
+        label="邮箱"
+      >
+        <a-input
+          v-decorator="[
+            'email',
+            {
+              rules: [{ required: true, message: '请输入邮箱' }]
+            }
+          ]"
+          placeholder="输入邮箱"/>
       </a-form-item>
 
       <a-form-item
@@ -69,7 +99,7 @@
         <a-textarea :rows="5" placeholder="..." v-decorator="['remark', {rules: [{ required: true, message: '请输入描述' }]}]"/>
       </a-form-item>
 
-      <!-- <a-form-item
+      <a-form-item
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
         label="拥有角色"
@@ -81,9 +111,9 @@
           v-decorator="['roleIds', {rules: [{ required: true, message: '请选择角色' }]}]"
           :allowClear="true"
         >
-          <a-select-option v-for="(action) in roleAll" :key="action.roleId" >{{ action.roleName }}</a-select-option>
+          <a-select-option v-for="(action) in roleAll" :key="action.id" >{{ action.roleName }}</a-select-option>
         </a-select>
-      </a-form-item> -->
+      </a-form-item>
 
     </a-form>
   </a-modal>
@@ -123,7 +153,7 @@ export default {
   beforeCreate () {
   },
   created () {
-    // this.loadRoleAll()
+    this.loadRoleAll()
   },
   methods: {
     add () {
@@ -134,7 +164,7 @@ export default {
       this.mdl = Object.assign({}, record)
       this.visible = true
       this.$nextTick(() => {
-        this.form.setFieldsValue(pick(this.mdl, 'id', 'loginName', 'userName', 'status', 'roleIds', 'remark', 'deptId'))
+        this.form.setFieldsValue(pick(this.mdl, 'id', 'nickName', 'userName', 'phone', 'email', 'status', 'roleIds', 'remark', 'deptId'))
         // this.form.setFieldsValue({ ...record })
       })
     },
@@ -148,7 +178,7 @@ export default {
     },
     loadRoleAll () {
       getRoleAll().then(res => {
-        this.roleAll = res.rows
+        this.roleAll = res.data
         console.log('roleALl', this.roleAll)
       })
     },
@@ -162,6 +192,9 @@ export default {
         if (!err) {
           console.log('Received values of form: ', values)
           this.confirmLoading = true
+          if (!values.id) {
+            delete values.id
+          }
           saveUser(values).then(res => {
             console.log(res, 'saveUser')
             if (res.code === 20000) {

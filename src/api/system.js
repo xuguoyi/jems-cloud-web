@@ -3,7 +3,7 @@ import { axios } from '@/utils/request'
 const api = {
   user: '/system/user',
   role: '/system/role',
-  permission: '/system/menu',
+  permission: '/system/resources',
   dept: '/system/dept',
   dictType: '/system/dict/type',
   dictData: '/system/dict/data',
@@ -16,16 +16,18 @@ export default api
 
 // user
 export function getUserList (parameter) {
+  const { pageNum, pageSize, ...queryObj } = parameter
   return axios({
-    url: api.user + '/page/1/10',
+    url: api.user + `/page/${pageNum}/${pageSize}`,
     method: 'get',
-    params: parameter
+    params: queryObj
   })
 }
 export function saveUser (parameter) {
+  const isUpdate = !!parameter.id
   return axios({
-    url: api.user + (parameter.id > 0 ? `/update/${parameter.id}` : '/insert'),
-    method: 'post',
+    url: api.user + (isUpdate ? `/update/${parameter.id}` : '/insert'),
+    method: isUpdate ? 'put' : 'post',
     data: parameter,
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'
@@ -34,45 +36,47 @@ export function saveUser (parameter) {
 }
 export function delUser (parameter) {
   return axios({
-    url: api.user + `/delete${parameter.id}`,
-    method: 'post',
+    url: api.user + `/delete/${parameter.ids}`,
+    method: 'delete',
     params: parameter
   })
 }
 export function changUserStatus (parameter) {
   return axios({
-    url: api.user + '/status',
-    method: 'post',
+    url: api.user + `/update/status/${parameter.id}/${parameter.status}`,
+    method: 'put',
     data: parameter
   })
 }
 export function resetPwd (parameter) {
   return axios({
-    url: api.user + '/resetPwd',
-    method: 'post',
+    url: api.user + `/update/password/${parameter.id}`,
+    method: 'put',
     data: parameter
   })
 }
 
 // role
 export function getRoleList (parameter) {
+  const { pageNum, pageSize, ...queryObj } = parameter
   return axios({
-    url: api.role + '/page/1/10',
+    url: api.role + `/page/${pageNum}/${pageSize}`,
     method: 'get',
-    params: parameter
+    params: queryObj
   })
 }
 export function getRoleAll () {
   return axios({
-    url: api.role + '/all',
+    url: api.role + '/list',
     method: 'get'
   })
 }
 
 export function saveRole (parameter) {
+  const isUpdate = !!parameter.id
   return axios({
-    url: api.role + (parameter.roleId > 0 ? '/update' : '/save'),
-    method: 'post',
+    url: api.role + (isUpdate ? `/update/${parameter.id}` : '/insert'),
+    method: isUpdate ? 'put' : 'post',
     data: parameter,
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'
@@ -82,15 +86,14 @@ export function saveRole (parameter) {
 
 export function delRole (parameter) {
   return axios({
-    url: api.role + '/remove',
-    method: 'post',
-    params: parameter
+    url: api.role + `/delete/${parameter.ids}`,
+    method: 'delete'
   })
 }
 export function changRoleStatus (parameter) {
   return axios({
-    url: api.role + '/status',
-    method: 'post',
+    url: api.role + `/update/status/${parameter.id}/${parameter.status}`,
+    method: 'put',
     data: parameter
   })
 }
@@ -111,10 +114,12 @@ export function getPermissionAll (parameter) {
   })
 }
 export function getPermissions (parameter) {
+  const { pageNum, pageSize, ...queryObj } = parameter
   return axios({
-    url: api.permission + '/list',
+    url: api.permission + `/page/1/10`,
+    // url: api.permission + `/page/${pageNum}/${pageSize}`,
     method: 'get',
-    params: parameter
+    params: queryObj
   })
 }
 export function getRolePermIds (roleId) {
@@ -175,16 +180,18 @@ export function delDept (deptId) {
 }
 // dictType
 export function getDictTypeList (parameter) {
+  const { pageNum, pageSize, ...queryObj } = parameter
   return axios({
-    url: api.dictType + '/list',
+    url: api.dictType + `/page/${pageNum}/${pageSize}`,
     method: 'get',
-    params: parameter
+    params: queryObj
   })
 }
 export function saveDictType (parameter) {
+  const isUpdate = !!parameter.id
   return axios({
-    url: api.dictType + (parameter.dictId > 0 ? '/update' : '/save'),
-    method: 'post',
+    url: api.dictType + (isUpdate ? `/update/${parameter.id}` : '/insert'),
+    method: isUpdate ? 'put' : 'post',
     data: parameter,
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'
@@ -193,8 +200,8 @@ export function saveDictType (parameter) {
 }
 export function delDictType (parameter) {
   return axios({
-    url: api.dictType + '/remove',
-    method: 'post',
+    url: api.dictType + `/delete/${parameter.ids}`,
+    method: 'delete',
     params: parameter
   })
 }
@@ -226,16 +233,18 @@ export function delDictData (parameter) {
 }
 // dist 地区
 export function getDistList (parameter) {
+  const { pageNum, pageSize, ...queryObj } = parameter
   return axios({
-    url: api.dist + '/list',
+    url: api.dist + `/page/${pageNum}/${pageSize}`,
     method: 'get',
-    params: parameter
+    params: queryObj
   })
 }
 export function saveDist (parameter) {
+  const isUpdate = !!parameter.id
   return axios({
-    url: api.dist + (parameter.id > 0 ? '/update' : '/save'),
-    method: 'post',
+    url: api.dist + (isUpdate ? `/update/${parameter.id}` : '/insert'),
+    method: isUpdate ? 'put' : 'post',
     data: parameter,
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'
@@ -244,23 +253,25 @@ export function saveDist (parameter) {
 }
 export function delDist (parameter) {
   return axios({
-    url: api.dist + '/remove',
-    method: 'post',
+    url: api.dist + `/delete/${parameter.ids}`,
+    method: 'delete',
     params: parameter
   })
 }
 // config 配置
 export function getConfigList (parameter) {
+  const { pageNum, pageSize, ...queryObj } = parameter
   return axios({
-    url: api.config + '/list',
+    url: api.config + `/page/${pageNum}/${pageSize}`,
     method: 'get',
-    params: parameter
+    params: queryObj
   })
 }
 export function saveConfig (parameter) {
+  const isUpdate = !!parameter.id
   return axios({
-    url: api.config + (parameter.configId > 0 ? '/update' : '/save'),
-    method: 'post',
+    url: api.config + (isUpdate ? `/update/${parameter.id}` : '/insert'),
+    method: isUpdate ? 'put' : 'post',
     data: parameter,
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'
@@ -269,8 +280,8 @@ export function saveConfig (parameter) {
 }
 export function delConfig (parameter) {
   return axios({
-    url: api.config + '/remove',
-    method: 'post',
+    url: api.config + `/delete/${parameter.ids}`,
+    method: 'delete',
     params: parameter
   })
 }

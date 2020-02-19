@@ -11,7 +11,7 @@
     <a-form :form="form">
 
       <a-form-item style="display:none">
-        <a-input v-decorator="['roleId']"/>
+        <a-input v-decorator="['id']"/>
       </a-form-item>
 
       <a-form-item
@@ -43,7 +43,7 @@
         label="显示顺序"
       >
         <a-input
-          v-decorator="['roleSort',{rules: [{ required: true, message: '请输入顺序' }]}]"
+          v-decorator="['sortNo',{rules: [{ required: true, message: '请输入顺序' }]}]"
           placeholder="显示顺序"/>
       </a-form-item>
 
@@ -130,8 +130,8 @@ export default {
       this.edit({ })
     },
     edit (record) {
-      if (record.roleId) {
-        getRolePermIds(record.roleId).then(res => {
+      if (record.id) {
+        getRolePermIds(record.id).then(res => {
           const pidSet = new Set(res.map(m => m.parentId).filter(id => id > 0))
           this.pidSet = pidSet
           // 因为antd 树插件勾选父节点会导致所有子节点选中,所以过滤所有父节点
@@ -143,7 +143,7 @@ export default {
       this.treeCheck = false
       this.visible = true
       this.$nextTick(() => {
-        this.form.setFieldsValue(pick(this.mdl, 'roleId', 'roleName', 'status', 'roleSort', 'roleKey'))
+        this.form.setFieldsValue(pick(this.mdl, 'id', 'roleName', 'status', 'sortNo', 'roleKey'))
         // this.form.setFieldsValue(...record)
       })
     },
@@ -168,18 +168,18 @@ export default {
     },
     loadPermissions () {
       getPermissions().then(res => {
-        this.buildtree(res.rows, this.permissions, 0)
+        this.buildtree(res.data, this.permissions, '000000')
       })
     },
     buildtree (list, permissions, parentId) {
       list.forEach(item => {
         if (item.parentId === parentId) {
           var child = {
-            key: item.menuId,
-            title: item.menuName,
+            key: item.id,
+            title: item.resName,
             children: []
           }
-          this.buildtree(list, child.children, item.menuId)
+          this.buildtree(list, child.children, item.id)
           permissions.push(child)
         }
       })
@@ -198,13 +198,16 @@ export default {
         if (!err) {
           values.menuIds = checkedAll
           _this.confirmLoading = true
+          if (!values.id) {
+            delete values.id
+          }
           saveRole(Object.assign(values)).then(res => {
-            if (res.code === 0) {
-              _this.$message.success('保存成功')
+            if (res.code === 20000) {
+              _this.$message.success(res.message)
               _this.$emit('ok')
               _this.visible = false
             } else {
-              _this.$message.success(res.msg)
+              _this.$message.success(res.message)
             }
           }).catch(() => {
             _this.$message.error('系统错误，请稍后再试')

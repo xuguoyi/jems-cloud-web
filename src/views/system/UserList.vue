@@ -29,12 +29,12 @@
             <a-row :gutter="48">
               <a-col :md="5" d:sm="15">
                 <a-form-item label="用户名">
-                  <a-input placeholder="请输入" v-model="queryParam.loginName"/>
+                  <a-input placeholder="请输入" v-model="queryParam.filter_EQ_userName"/>
                 </a-form-item>
               </a-col>
               <a-col :md="5" d:sm="15">
                 <a-form-item label="状态">
-                  <a-select placeholder="请选择" v-model="queryParam.status" >
+                  <a-select placeholder="请选择" v-model="queryParam.filter_EQ_status" >
                     <a-select-option :value="''">全部</a-select-option>
                     <a-select-option :value="'0'">正常</a-select-option>
                     <a-select-option :value="'1'">禁用</a-select-option>
@@ -153,10 +153,19 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        return getUserList(Object.assign(parameter, this.queryParam))
+        console.log(this.queryParam)
+        const queryParam = { ...this.queryParam }
+        if (!this.queryParam.filter_EQ_status) {
+          delete queryParam.filter_EQ_status
+        }
+        return getUserList(Object.assign(parameter, queryParam))
           .then(res => {
-            console.log('getUserList', res)
-            return res.data
+            const data = res.data
+            data.pageNum = parameter.pageNum
+            data.data = data.data.map(item => {
+              return { ...item, status: `${item.status}` }
+            })
+            return data
           })
       },
       searchValue: '',
@@ -202,6 +211,7 @@ export default {
       console.log('handleSaveOk')
     },
     delByIds (ids) {
+      console.log('ids', ids)
       delUser({ ids: ids.join(',') }).then(res => {
         if (res.code === 20000) {
           this.$message.success(`删除成功`)
@@ -218,9 +228,9 @@ export default {
       record.status = record.status === '0' ? '1' : '0'
       changUserStatus(pick(record, 'id', 'status')).then(res => {
         if (res.code === 20000) {
-          this.$message.success('保存成功')
+          this.$message.success(res.message)
         } else {
-          this.$message.error(res.msg)
+          this.$message.error(res.message)
         }
       })
       // 发送状态到服务器

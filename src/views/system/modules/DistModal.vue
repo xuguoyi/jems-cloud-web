@@ -141,6 +141,7 @@ export default {
       targetOption.loading = true
 
       getDistList(Object.assign({ pid: targetOption.value })).then(res => {
+        console.log('dist', res)
         targetOption.loading = false
         targetOption.children = res.rows.map(d => {
           return { value: d.id, label: d.name, isLeaf: d.deep === 2 }
