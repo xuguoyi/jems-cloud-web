@@ -73,14 +73,14 @@
       >
         <span>{{ mdl.updateTime }}</span>
       </a-form-item>
-      <a-divider />
-      <a-form-item
+      <!-- <a-divider /> -->
+      <!-- <a-form-item
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
         label="演示demo"
       >
         <a-cascader :options="options" :loadData="loadData" placeholder="Please select" v-model="city" changeOnSelect/>
-      </a-form-item>
+      </a-form-item> -->
     </a-form>
   </a-modal>
 </template>
@@ -118,11 +118,11 @@ export default {
   beforeCreate () {
   },
   created () {
-    getDistList(Object.assign({ deep: 0 })).then(res => {
-      this.options = res.rows.map(d => {
-        return { value: d.id, label: d.name, isLeaf: false }
-      })
-    })
+    // getDistList(Object.assign({ deep: 0 })).then(res => {
+    //   this.options = res.rows.map(d => {
+    //     return { value: d.id, label: d.name, isLeaf: false }
+    //   })
+    // })
   },
   methods: {
     add () {
@@ -136,19 +136,19 @@ export default {
         this.form.setFieldsValue(pick(this.mdl, 'id', 'deep', 'name', 'pinyin', 'pinyinShor', 'extName'))
       })
     },
-    loadData (selectedOptions) {
-      const targetOption = selectedOptions[selectedOptions.length - 1]
-      targetOption.loading = true
+    // loadData (selectedOptions) {
+    //   const targetOption = selectedOptions[selectedOptions.length - 1]
+    //   targetOption.loading = true
 
-      getDistList(Object.assign({ pid: targetOption.value })).then(res => {
-        console.log('dist', res)
-        targetOption.loading = false
-        targetOption.children = res.rows.map(d => {
-          return { value: d.id, label: d.name, isLeaf: d.deep === 2 }
-        })
-        this.options = [...this.options]
-      })
-    },
+    //   getDistList(Object.assign({ pid: targetOption.value })).then(res => {
+    //     console.log('dist', res)
+    //     targetOption.loading = false
+    //     targetOption.children = res.data.map(d => {
+    //       return { value: d.id, label: d.name, isLeaf: d.deep === 2 }
+    //     })
+    //     this.options = [...this.options]
+    //   })
+    // },
     handleSubmit (e) {
       e.preventDefault()
       this.$message.success('your select dist is ' + this.city)
@@ -157,12 +157,12 @@ export default {
           console.log('Received values of form: ', values)
           this.confirmLoading = true
           saveDist(values).then(res => {
-            if (res.code === 0) {
-              this.$message.success('保存成功')
+            if (res.code === 20000) {
+              this.$message.success(res.message)
               this.$emit('ok')
               this.visible = false
             } else {
-              this.$message.success(res.msg)
+              this.$message.success(res.message)
             }
           }).catch(() => {
             this.$message.error('系统错误，请稍后再试')

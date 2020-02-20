@@ -5,17 +5,17 @@
         <a-row :gutter="48">
           <a-col :md="5" :sm="15">
             <a-form-item label="字典名称">
-              <a-input placeholder="请输入" v-model="queryParam.dictName"/>
+              <a-input placeholder="请输入" v-model="queryParam.filter_EQ_dictName"/>
             </a-form-item>
           </a-col>
           <a-col :md="5" :sm="15">
             <a-form-item label="字典类型">
-              <a-input placeholder="请输入" v-model="queryParam.dictType"/>
+              <a-input placeholder="请输入" v-model="queryParam.filter_EQ_dictType"/>
             </a-form-item>
           </a-col>
           <a-col :md="5" :sm="15">
             <a-form-item label="状态">
-              <a-select placeholder="请选择" v-model="queryParam.status" default-value="0">
+              <a-select placeholder="请选择" v-model="queryParam.filter_EQ_status" default-value="0">
                 <a-select-option :value="''">全部</a-select-option>
                 <a-select-option :value="0">正常</a-select-option>
                 <a-select-option :value="1">禁用</a-select-option>
@@ -142,8 +142,8 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const queryParam = { ...this.queryParam }
-        if (this.queryParam.filter_EQ_configType === '') {
-          delete queryParam.filter_EQ_configType
+        if (this.queryParam.filter_EQ_status === '') {
+          delete queryParam.filter_EQ_status
         }
         return getDictTypeList(Object.assign(parameter, queryParam))
           .then(res => {

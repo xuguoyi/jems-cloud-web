@@ -5,17 +5,17 @@
         <a-row :gutter="48">
           <a-col :md="5" :sm="15">
             <a-form-item label="唯一键">
-              <a-input placeholder="请输入" v-model="queryParam.menuKey"/>
+              <a-input placeholder="请输入" v-model="queryParam.filter_EQ_resKey"/>
             </a-form-item>
           </a-col>
           <a-col :md="5" :sm="15">
             <a-form-item label="权限名称">
-              <a-input placeholder="请输入" v-model="queryParam.menuName"/>
+              <a-input placeholder="请输入" v-model="queryParam.filter_EQ_resName"/>
             </a-form-item>
           </a-col>
           <a-col :md="5" :sm="15">
             <a-form-item label="状态">
-              <a-select placeholder="请选择" v-model="queryParam.visible">
+              <a-select placeholder="请选择" v-model="queryParam.filter_EQ_visible">
                 <a-select-option value="">全部</a-select-option>
                 <a-select-option value="0">显示</a-select-option>
                 <a-select-option value="1">隐藏</a-select-option>
@@ -24,7 +24,7 @@
           </a-col>
           <a-col :md="8" :sm="24">
             <span class="table-page-search-submitButtons">
-              <a-button type="primary" @click="this.fetch">查询</a-button>
+              <a-button type="primary" @click="fetch">查询</a-button>
               <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
             </span>
           </a-col>
@@ -40,10 +40,10 @@
       :pagination="pagination"
       :loading="loading"
       :columns="columns"
-      :dataSource="data">
-      @change="handleChange"
-      <span slot="menuType" slot-scope="text">
-        {{ text | menuTypeFilter }}
+      :dataSource="data"
+      @change="handleChange">
+      <span slot="resType" slot-scope="text">
+        {{ text | resTypeFilter }}
       </span>
 
       <span slot="visible" slot-scope="text">
@@ -53,9 +53,9 @@
       <span slot="action" slot-scope="text, record">
         <a v-if="editEnabel" @click="handleEdit(record)">编辑</a>
         <a-divider type="vertical" />
-        <a v-if="addEnable" @click="handleAdd(record.menuId+'')">新增</a>
+        <a v-if="addEnable" @click="handleAdd(record.id+'')">新增</a>
         <a-divider type="vertical" />
-        <a v-if="removeEnable" @click="delById(record.menuId)">删除</a>
+        <a v-if="removeEnable" @click="delById(record.id)">删除</a>
       </span>
     </a-table>
 
@@ -99,11 +99,11 @@ export default {
       columns: [
         {
           title: '权限名称',
-          dataIndex: 'menuName'
+          dataIndex: 'resName'
         },
         {
           title: '路由唯一键',
-          dataIndex: 'menuKey'
+          dataIndex: 'resKey'
         },
         {
           title: '组件',
@@ -111,12 +111,12 @@ export default {
         },
         {
           title: '排序',
-          dataIndex: 'orderNum'
+          dataIndex: 'sortNo'
         },
         {
           title: '按钮类型',
-          dataIndex: 'menuType',
-          scopedSlots: { customRender: 'menuType' }
+          dataIndex: 'resType',
+          scopedSlots: { customRender: 'resType' }
         },
         {
           title: '链接',
@@ -158,7 +158,7 @@ export default {
       }
       return statusMap[status]
     },
-    menuTypeFilter (type) {
+    resTypeFilter (type) {
       const menuMap = {
         'M': '目录',
         'F': '按钮',
@@ -180,15 +180,14 @@ export default {
     handleOk () {
       // this.$refs.table.refresh()
       this.fetch()
-      console.log('handleSaveOk')
     },
     delById (id) {
       delPerm(id).then(res => {
-        if (res.code === 0) {
-          this.$message.success(`删除成功`)
+        if (res.code === 20000) {
+          this.$message.success(res.message)
           this.handleOk()
         } else {
-          this.$message.error(res.msg)
+          this.$message.error(res.message)
         }
       })
     },
@@ -197,10 +196,16 @@ export default {
     },
     fetch () {
       this.loading = true
+      console.log('fetch', this.queryParam)
       getPermissions(Object.assign(this.queryParam)).then(res => {
-        console.log(res.data)
-        this.data = treeData(res.data.data, 'id')
-        this.loading = false
+        if (res.code === 20000) {
+          console.log('permission', res)
+          this.data = treeData(res.data, 'id')
+          console.log('data', this.data)
+          this.loading = false
+        } else {
+          this.$message.error(res.message)
+        }
       })
     }
   },

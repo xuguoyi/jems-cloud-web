@@ -196,7 +196,7 @@ export default {
       this.form.validateFields((err, values) => {
         // 验证表单没错误
         if (!err) {
-          values.menuIds = checkedAll
+          values.memberIds = checkedAll
           _this.confirmLoading = true
           if (!values.id) {
             delete values.id

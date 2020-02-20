@@ -104,8 +104,6 @@ export const generatorDynamicRouter = () => {
   return new Promise((resolve, reject) => {
     // ajax
     getRouterByUser().then(res => {
-      console.log(res.data, 1)
-
       const rootMenu = getRootMenu(res.data)
       const routers = generator(rootMenu)
       // console.log('routers', routers)

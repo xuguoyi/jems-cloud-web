@@ -114,12 +114,12 @@ export function getPermissionAll (parameter) {
   })
 }
 export function getPermissions (parameter) {
-  const { pageNum, pageSize, ...queryObj } = parameter
   return axios({
-    url: api.permission + `/page/1/10`,
+    // url: api.permission + `/page/1/10`,
     // url: api.permission + `/page/${pageNum}/${pageSize}`,
+    url: api.permission + `/list`,
     method: 'get',
-    params: queryObj
+    params: parameter
   })
 }
 export function getRolePermIds (roleId) {
@@ -130,9 +130,10 @@ export function getRolePermIds (roleId) {
 }
 
 export function savePerm (parameter) {
+  const isUpdate = !!parameter.id
   return axios({
-    url: api.permission + (parameter.menuId > 0 ? '/update' : '/save'),
-    method: 'post',
+    url: api.permission + (isUpdate ? `/update/${parameter.id}` : '/insert'),
+    method: isUpdate ? 'put' : 'post',
     data: parameter,
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'
@@ -142,8 +143,8 @@ export function savePerm (parameter) {
 
 export function delPerm (deptId) {
   return axios({
-    url: api.permission + '/remove/' + `${deptId}`,
-    method: 'post'
+    url: api.permission + '/delete/' + `${deptId}`,
+    method: 'delete'
   })
 }
 
@@ -208,16 +209,18 @@ export function delDictType (parameter) {
 
 // dictData
 export function getDictDataList (parameter) {
+  const { pageNum, pageSize, ...queryObj } = parameter
   return axios({
-    url: api.dictData + '/list',
+    url: api.dictData + `/page/${pageNum}/${pageSize}`,
     method: 'get',
-    params: parameter
+    params: queryObj
   })
 }
 export function saveDictData (parameter) {
+  const isUpdate = !!parameter.id
   return axios({
-    url: api.dictData + (parameter.dictCode > 0 ? '/update' : '/save'),
-    method: 'post',
+    url: api.dictData + (isUpdate ? `/update/${parameter.id}` : '/insert'),
+    method: isUpdate ? 'put' : 'post',
     data: parameter,
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'
@@ -226,8 +229,8 @@ export function saveDictData (parameter) {
 }
 export function delDictData (parameter) {
   return axios({
-    url: api.dictData + '/remove',
-    method: 'post',
+    url: api.dictData + `/delete/${parameter.ids}`,
+    method: 'delete',
     params: parameter
   })
 }

@@ -5,7 +5,7 @@
         <a-row :gutter="48">
           <a-col :md="5" :sm="15">
             <a-form-item label="层级">
-              <a-select placeholder="请选择" v-model="queryParam.deep">
+              <a-select placeholder="请选择" v-model="queryParam.filter_EQ_deep">
                 <a-select-option :value="''">所有</a-select-option>
                 <a-select-option v-for="(d, index) in deeps" :key="index" :value="d.value">{{ d.label }}</a-select-option>
               </a-select>
@@ -13,12 +13,12 @@
           </a-col>
           <a-col :md="5" :sm="15">
             <a-form-item label="名称">
-              <a-input placeholder="请输入" v-model="queryParam.name"/>
+              <a-input placeholder="请输入" v-model="queryParam.filter_EQ_name"/>
             </a-form-item>
           </a-col>
           <a-col :md="5" :sm="15">
             <a-form-item label="上级编号">
-              <a-input placeholder="请输入" v-model="queryParam.pid"/>
+              <a-input placeholder="请输入" v-model="queryParam.filter_EQ_pid"/>
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="24">

@@ -10,7 +10,7 @@ export function treeData (source, id, parentId, children, rootId) {
   id = id || 'id'
   parentId = parentId || 'parentId'
   children = children || 'children'
-  rootId = rootId || 0
+  rootId = rootId || '000000'
   const cloneData = JSON.parse(JSON.stringify(source))// 对源数据深度克隆
   return cloneData.filter(father => {
     const branchArr = cloneData.filter(child => father[id] === child[parentId])// 返回每一项的子级数组

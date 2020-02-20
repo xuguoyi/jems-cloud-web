@@ -8,7 +8,7 @@
   >
     <a-form :form="form">
       <a-form-item style="display:none">
-        <a-input v-decorator="['menuId']"/>
+        <a-input v-decorator="['id']"/>
       </a-form-item>
       <a-form-item
         :labelCol="labelCol"
@@ -30,7 +30,7 @@
         :wrapperCol="wrapperCol"
         label="菜单类型"
       >
-        <a-select v-decorator="['menuType', {initialValue:'M',rules: [{ required: true, message: '请选择类型' }]}]" @select="menuTypeChange">
+        <a-select v-decorator="['resType', {initialValue:'M',rules: [{ required: true, message: '请选择类型' }]}]" @select="resTypeChange">
           <a-select-option :value="'M'">目录</a-select-option>
           <a-select-option :value="'C'">菜单</a-select-option>
           <a-select-option :value="'F'">按钮</a-select-option>
@@ -43,7 +43,7 @@
         label="权限名称"
       >
         <a-input
-          v-decorator="['menuName',{rules: [{ required: true, message: '请输入权限名称' }]}]"
+          v-decorator="['resName',{rules: [{ required: true, message: '请输入权限名称' }]}]"
           placeholder="起一个名字"/>
       </a-form-item>
 
@@ -53,14 +53,14 @@
         label="路由唯一键"
       >
         <a-input
-          v-decorator="['menuKey',{initialValue:'',rules: [{ required: true, message: '请输入动态菜单唯一键' }]}]"
+          v-decorator="['resKey',{initialValue:'',rules: [{ required: true, message: '请输入动态菜单唯一键' }]}]"
           placeholder="路由唯一键：如'user'"/>
       </a-form-item>
 
       <a-form-item
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
-        v-if="menuType!='M'"
+        v-if="resType!='M'"
         label="权限标识"
       >
         <a-input
@@ -71,7 +71,7 @@
       <a-form-item
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
-        v-if="menuType!=='F'"
+        v-if="resType!=='F'"
       >
         <span slot="label">组件
           <a-tooltip title="routerUtil中定义的组件或views文件下的路径">
@@ -86,7 +86,7 @@
       <a-form-item
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
-        v-if="menuType!=='F'"
+        v-if="resType!=='F'"
         label="图标"
       >
         <a-input v-decorator="['icon',{rules: [{ required: false, message: '请选择图标' }]}]" ref="iconInput" @click="iconselect()" enterButton="选择图标" placeholder="选择图标">
@@ -98,7 +98,7 @@
       <a-form-item
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
-        v-if="menuType==='C'"
+        v-if="resType==='C'"
         label="打开方式"
       >
         <a-select v-decorator="['target', {initialValue:'',rules: [{ required: false, message: '请选择打开方式' },{validator: validatePathTarget}]}]">
@@ -110,7 +110,7 @@
       <a-form-item
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
-        v-if="menuType==='C'"
+        v-if="resType==='C'"
       >
         <span slot="label">链接地址
           <a-tooltip title="链接地址为外链时，打开方式必须为新窗口（antd限制）">
@@ -130,7 +130,7 @@
       <a-form-item
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
-        v-if="menuType!=='F'"
+        v-if="resType!=='F'"
         label="重定向地址"
       >
         <a-input
@@ -141,7 +141,7 @@
       <a-form-item
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
-        v-if="menuType!=='F'"
+        v-if="resType!=='F'"
         label="隐藏子菜单"
       >
         <a-switch v-decorator="['hiddenChildren',{initialValue:false}]" />
@@ -150,7 +150,7 @@
       <a-form-item
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
-        v-if="menuType!=='F'"
+        v-if="resType!=='F'"
       >
         <span slot="label">隐藏头部信息
           <a-tooltip title="隐藏 PageHeader 组件中的页面带的 面包屑和页面标题栏">
@@ -166,7 +166,7 @@
         label="显示顺序"
       >
         <a-input-number
-          v-decorator="['orderNum',{initialValue:'1',rules: [{ required: true, message: '请输入顺序数字' }]}]"
+          v-decorator="['sortNo',{initialValue:'1',rules: [{ required: true, message: '请输入顺序数字' }]}]"
           placeholder="显示顺序"/>
       </a-form-item>
 
@@ -206,10 +206,10 @@ export default {
         xs: { span: 24 },
         sm: { span: 16 }
       },
-      permissions: [{ key: 0, value: '0', title: '无' }],
+      permissions: [{ key: '000000', value: '000000', title: '无' }],
       mdl: {},
       icon: 'smile',
-      menuType: '',
+      resType: '',
       form: this.$form.createForm(this)
     }
   },
@@ -219,8 +219,8 @@ export default {
     this.loadPermissions()
   },
   methods: {
-    menuTypeChange (type) {
-      this.menuType = type
+    resTypeChange (type) {
+      this.resType = type
     },
     emitEmpty () {
       this.$refs.iconInput.focus()
@@ -235,17 +235,17 @@ export default {
     },
     add (parentId) {
       this.form.resetFields()
-      this.edit({ parentId: parentId || '0' })
+      this.edit({ parentId: parentId || '000000' })
     },
     edit (record) {
       this.mdl = Object.assign({}, record)
       this.visible = true
-      this.menuType = this.mdl.menuType || 'M'
+      this.resType = this.mdl.resType || 'M'
       this.$nextTick(() => {
         this.mdl.icon ? this.icon = this.mdl.icon : this.icon = 'smile'
         this.mdl.parentId += ''
-        this.form.setFieldsValue(pick(this.mdl, 'icon', 'menuId', 'parentId', 'menuType', 'visible', 'perms', 'target',
-          'orderNum', 'menuName', 'menuKey', 'component', 'path', 'redirect', 'hiddenChildren', 'hiddenHeader'))
+        this.form.setFieldsValue(pick(this.mdl, 'icon', 'id', 'parentId', 'resType', 'visible', 'perms', 'target',
+          'sortNo', 'resName', 'resKey', 'component', 'path', 'redirect', 'hiddenChildren', 'hiddenHeader'))
         // this.form.setFieldsValue({ ...record })
       })
     },
@@ -259,19 +259,19 @@ export default {
     },
     loadPermissions () {
       getPermissions().then(res => {
-        this.buildtree(res.rows, this.permissions, 0)
+        this.buildtree(res.data, this.permissions, '000000')
       })
     },
     buildtree (list, arr, parentId) {
       list.forEach(item => {
         if (item.parentId === parentId) {
           var child = {
-            key: item.menuId,
-            value: item.menuId + '',
-            title: item.menuName,
+            key: item.id,
+            value: item.id + '',
+            title: item.resName,
             children: []
           }
-          this.buildtree(list, child.children, item.menuId)
+          this.buildtree(list, child.children, item.id)
           arr.push(child)
         }
       })
@@ -283,7 +283,7 @@ export default {
           console.log('Received values of form: ', values)
           this.confirmLoading = true
           savePerm(values).then(res => {
-            if (res.code === 0) {
+            if (res.code === 20000) {
               this.$message.success('保存成功')
               this.$emit('ok')
               this.visible = false
