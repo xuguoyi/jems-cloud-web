@@ -5,7 +5,8 @@ import { VueAxios } from './axios'
 import { notification } from 'ant-design-vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 
-const baseURL = process.env.VUE_APP_API_BASE_URL
+// const baseURL = process.env.VUE_APP_API_BASE_URL
+const baseURL = process.env.VUE_APP_PROXY_URL
 // 创建 axios 实例
 const service = axios.create({
   baseURL: baseURL, // api base_url
