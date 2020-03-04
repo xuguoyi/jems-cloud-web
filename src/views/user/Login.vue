@@ -1,5 +1,6 @@
 <template>
   <div class="main">
+    <deal-event />
     <a-form
       id="formLogin"
       class="user-layout-login"
@@ -43,15 +44,6 @@
             </a-input>
           </a-form-item>
 
-          <a-form-item>
-            <show-modal />
-          </a-form-item>
-          <a-form-item>
-            <show-modal />
-          </a-form-item>
-          <a-form-item>
-            <show-modal />
-          </a-form-item>
           <!-- <a-row :gutter="16">
             <a-col class="gutter-row" :span="16">
               <a-form-item>
@@ -150,20 +142,12 @@ import { getSmsCaptcha, get2step } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 // import { getSmsCaptcha, get2step, imgcode } from '@/api/login'
 
-// 选人控件
-import ShowModal from '@/components/ChooseModal/ShowModal'
-
 export default {
   components: {
-    TwoStepCaptcha,
-    ShowModal
+    TwoStepCaptcha
   },
   data () {
     return {
-      // 弹窗
-      userNameLabel: '',
-      userNameLabel1: '',
-      userNameLabel2: '',
       codesrc: null,
       randomStr: null,
       customActiveKey: 'tab1',

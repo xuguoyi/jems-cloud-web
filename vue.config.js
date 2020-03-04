@@ -11,7 +11,8 @@ const assetsCDN = {
   // https://cdn.jsdelivr.net/npm/ant-design-vue@1.3.9/dist/antd.min.css
   css: [],
   js: [
-    'https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js',
+    'https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js',
+    // 'https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js',
     'https://cdn.jsdelivr.net/npm/axios@0.19.0/dist/axios.min.js',
     'https://cdn.jsdelivr.net/npm/vue-router@3.1.2/dist/vue-router.min.js',
     'https://cdn.jsdelivr.net/npm/vuex@3.1.1/dist/vuex.min.js',

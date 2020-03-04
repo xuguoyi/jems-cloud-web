@@ -1,7 +1,7 @@
 <template>
-  <div class="UserModal">
+  <div class="show-modal">
     <div ref="allUser" class="allUser">
-      <p>所有人员</p>
+      <p>{{ allTitle }}</p>
       <div class="userContent">
         <div class="searchInput">
           <a-checkbox :indeterminate="indeterminate" @change="onCheckAllChange" :checked="checkAll"></a-checkbox>
@@ -13,8 +13,10 @@
           </a-input>
         </div>
         <div class="listContent">
-          <a-checkbox-group :options="allUserLists" :value="checkedList" @change="onChange" />
-          <ul class="letter-list">
+          <div class="checkboxGroup">
+            <a-checkbox-group :options="leftOptions" :value="checkedList" @change="onChange" />
+          </div>
+          <ul class="letter-list" v-if="type === 'user'">
             <li v-for="item in Letters" :key="item" :style="{background: bgLetter === item ? '#1890ff' : '', color: bgLetter === item ? '#fff' : '#000000a6'}" @click="filterLetter(item)">{{ item }}</li>
           </ul>
         </div>
@@ -23,16 +25,17 @@
     <div ref="operBtn" class="operBtn">
       <a-button type="primary" shape="circle" icon="right" @click="toRight"></a-button>
       <a-button class="centerBtn" type="primary" shape="circle" icon="left" @click="toLeft"></a-button>
-      <a-button type="primary" shape="circle" icon="double-left"></a-button>
     </div>
     <div ref="chosedUser" class="chosedUser">
-      <p>已选人员</p>
+      <p>{{ selectedTitle }}</p>
       <div class="userContent">
         <div class="searchInput">
           <a-checkbox :indeterminate="rightIndeterminate" @change="onCheckRightAllChange" :checked="rightCheckAll"></a-checkbox>
         </div>
         <div class="listContent">
-          <a-checkbox-group :options="selectUserLists" :value="rightCheckedList" @change="onRightChange" />
+          <div class="checkboxGroup">
+            <a-checkbox-group :options="rightOptions" :value="rightCheckedList" @change="onRightChange" />
+          </div>
         </div>
       </div>
     </div>
@@ -40,17 +43,31 @@
 </template>
 
 <script>
-const list = [
-  { value: '1', label: 'typeA1', type: 'A' },
-  { value: '2', label: 'typeA2', type: 'A' },
-  { value: '3', label: 'typeB1', type: 'B' },
-  { value: '4', label: 'typeB2', type: 'B' },
-  { value: '5', label: 'typeB3', type: 'B' }
-]
 export default {
-  name: 'UserModal',
+  name: 'ShowModal',
+  props: {
+    type: {
+      type: String,
+      default: 'user'
+    },
+    listData: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
+    value: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    }
+  },
   data () {
     return {
+      allTitle: '',
+      selectedTitle: '',
+      list: [],
       searchKey: '',
       Letters: ['All', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
       bgLetter: 'All',
@@ -58,55 +75,63 @@ export default {
       indeterminate: false,
       checkAll: false,
       // 右框
-      selectUserLists: [],
       rightCheckedList: [],
       rightIndeterminate: false,
-      rightCheckAll: false
+      rightCheckAll: false,
+      localValue: []
     }
   },
+  created () {
+    console.log(this.type, 'type')
+    this.list = _.cloneDeep(this.listData)
+    this.allTitle = this.type === 'user' ? '全部人员' : '全部组群'
+    this.selectedTitle = this.type === 'user' ? '已选人员' : '已选组群'
+    this.localValue = _.cloneDeep(this.value)
+  },
   computed: {
-    allUserLists () {
-      const arr = []
-      const selArr = []
-      const showArr = []
-      this.selectUserLists.forEach(item => {
-        selArr.push(item.value)
-      })
-      list.forEach(item => {
-        if (!selArr.includes(item.value)) {
-          arr.push(item)
+    rightOptions () {
+      const options = []
+      this.listData.forEach(item => {
+        if (this.localValue.includes(item.value)) {
+          options.push(item)
         }
       })
-      arr.forEach(item => {
-        if (this.bgLetter === 'All' || item.type === this.bgLetter) {
-          if (~item.label.indexOf(this.searchKey)) {
-            showArr.push(item)
+      return options
+    },
+    leftOptions () {
+      const options = []
+      this.listData.forEach(item => {
+        if (!this.localValue.includes(item.value)) {
+          if (this.bgLetter === 'All' || item.type === this.bgLetter) {
+            if (~item.label.indexOf(this.searchKey)) {
+              options.push(item)
+            }
           }
         }
       })
-      return showArr
+      return options
     }
   },
   methods: {
     // 左边全选和单选
     onChange (checkedList) {
-      this.indeterminate = checkedList.length > 0 && checkedList.length < this.allUserLists.length
-      this.checkAll = checkedList.length === this.allUserLists.length
+      this.indeterminate = checkedList.length > 0 && checkedList.length < this.leftOptions.length
+      this.checkAll = checkedList.length === this.leftOptions.length
       this.checkedList = checkedList
     },
     onCheckAllChange (e) {
-      this.checkedList = e.target.checked ? this.allUserLists.map(item => item.value) : []
+      this.checkedList = e.target.checked ? this.leftOptions.map(item => item.value) : []
       this.indeterminate = false
       this.checkAll = e.target.checked
     },
     // 右边全选和单选
     onRightChange (checkedList) {
-      this.rightIndeterminate = checkedList.length > 0 && checkedList.length < this.selectUserLists.length
-      this.rightCheckAll = checkedList.length === this.selectUserLists.length
+      this.rightIndeterminate = checkedList.length > 0 && checkedList.length < this.localValue.length
+      this.rightCheckAll = checkedList.length === this.localValue.length
       this.rightCheckedList = checkedList
     },
     onCheckRightAllChange (e) {
-      this.rightCheckedList = e.target.checked ? this.selectUserLists.map(item => item.value) : []
+      this.rightCheckedList = e.target.checked ? _.cloneDeep(this.localValue) : []
       this.rightIndeterminate = false
       this.rightCheckAll = e.target.checked
     },
@@ -128,46 +153,28 @@ export default {
     },
     // 中部按钮
     toRight () {
-      const selArr = []
-      this.selectUserLists.forEach(item => {
-        selArr.push(item.value)
-      })
-      const arr = [...new Set([...this.checkedList, ...selArr])]
-      const newArr = []
-      list.forEach(item => {
-        if (arr.includes(item.value)) {
-          newArr.push(item)
-        }
-      })
-      this.selectUserLists = newArr
+      const selArr = _.cloneDeep(this.localValue)
+      this.localValue = [...new Set([...this.checkedList, ...selArr])]
       this.clearCheck()
-      this.indeterminate = this.checkedList.length > 0 && this.checkedList.length < this.allUserLists.length
-      this.$emit('showName', this.selectUserLists)
+      this.indeterminate = this.checkedList.length > 0 && this.checkedList.length < this.leftOptions.length
+      this.$emit('change', this.localValue)
     },
     toLeft () {
-      const selArr = _.cloneDeep(this.selectUserLists)
-      console.log(selArr, 'sel')
-      const arr = []
-      selArr.forEach(item => {
-        if (!this.rightCheckedList.includes(item.value)) {
-          arr.push(item)
-        }
-      })
-      this.selectUserLists = arr
+      this.localValue = _.difference(this.localValue, this.rightCheckedList)
       this.clearRightCheck()
-      this.rightIndeterminate = this.rightCheckedList.length > 0 && this.rightCheckedList.length < this.selectUserLists.length
-      this.$emit('showName', this.selectUserLists)
+      this.rightIndeterminate = this.rightCheckedList.length > 0 && this.rightCheckedList.length < this.localValue.length
+      this.$emit('change', this.localValue)
     },
     clearSelectUserLists () {
-      this.selectUserLists = []
-      this.$emit('showName', [])
+      this.localValue = []
+      this.$emit('change', [])
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-  .UserModal {
+  .show-modal {
     background: #fff;
     display: flex;
     width: 582px;
@@ -204,6 +211,10 @@ export default {
     .listContent {
       position: relative;
       height: 490px;
+      .checkboxGroup {
+        height: 100%;
+        overflow: auto;
+      }
       .letter-list {
         list-style-type: none;
         position: absolute;

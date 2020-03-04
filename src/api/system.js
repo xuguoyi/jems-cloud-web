@@ -124,7 +124,7 @@ export function getPermissions (parameter) {
 }
 export function getRolePermIds (roleId) {
   return axios({
-    url: api.permission + '/role/' + `${roleId}`,
+    url: api.permission + '/list/role/' + `${roleId}` + '/SYSTEM',
     method: 'get'
   })
 }

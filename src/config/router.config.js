@@ -316,6 +316,40 @@ export const asyncRouterMap = [
             ]
           }
         ]
+      },
+      // 组件
+      {
+        path: '/assembly',
+        redirect: '/assembly/select-user',
+        component: PageView,
+        name: 'assembly',
+        meta: { title: '组件', icon: 'form', permission: [ 'form' ] },
+        children: [
+          {
+            path: '/assembly/select-user',
+            name: 'UserAssembly',
+            component: () => import('@/views/assembly/SelectUser'),
+            meta: { title: '选择人员', keepAlive: true, permission: [ 'form' ] }
+          },
+          {
+            path: '/assembly/select-group',
+            name: 'GroupAssembly',
+            component: () => import('@/views/assembly/SelectGroup'),
+            meta: { title: '选择组织', keepAlive: true, permission: [ 'form' ] }
+          },
+          {
+            path: '/assembly/multiple-selection',
+            name: 'MultipleAssembly',
+            component: () => import('@/views/assembly/MultipleSelection'),
+            meta: { title: '弹窗多选', keepAlive: true, permission: [ 'form' ] }
+          },
+          {
+            path: '/assembly/deal-event',
+            name: 'DealEvent',
+            component: () => import('@/views/assembly/DealEvent'),
+            meta: { title: '待办/已办/草稿', keepAlive: true, permission: [ 'form' ] }
+          }
+        ]
       }
     ]
   },

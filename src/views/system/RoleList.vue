@@ -194,7 +194,6 @@ export default {
     },
     handleOk () {
       this.$refs.table.refresh(true)
-      console.log('handleSaveOk')
     },
     delByIds (ids) {
       delRole({ ids: ids.join(',') }).then(res => {

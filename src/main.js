@@ -17,6 +17,7 @@ import './utils/filter' // global filter
 import 'ant-design-vue/dist/antd.less'
 import i18n from './locales'
 
+Vue.config.devtools = true
 Vue.config.productionTip = false
 
 // mount axios Vue.$http and this.$http

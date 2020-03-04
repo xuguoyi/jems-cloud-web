@@ -43,6 +43,9 @@ const constantRouterComponents = {
   donateList: () => import('@/views/others/DonateList'),
   mifei: () => import('@/views/others/MiFei'),
   gnqc: () => import('@/views/others/Gnqc')
+  // selectUser: () => import('@/views/assembly/SelectUser'),
+  // selectGroup: () => import('@/views/assembly/SelectGroup'),
+  // multipleSelection: () => import('@/views/assembly/MultipleSelection')
   // system
   // userList: () => import('@/views/system/UserList'),
   // roleList: () => import('@/views/system/RoleList'),
@@ -410,6 +413,44 @@ const menus = [
       {
         'title': '赣南脐橙',
         'key': 'gnqc'
+      }
+    ]
+  },
+  {
+    'title': '组件',
+    'key': 'assembly',
+    'component': 'PageView',
+    'icon': 'form',
+    'children': [
+      {
+        'title': '选择人员',
+        'key': 'selectUser',
+        'icon': '',
+        'component': 'assembly/SelectUser'
+      },
+      {
+        'title': '选择组织',
+        'key': 'selectGroup',
+        'icon': '',
+        'component': 'assembly/SelectGroup'
+      },
+      {
+        'title': '弹窗多选',
+        'key': 'multipleSelection',
+        'icon': '',
+        'component': 'assembly/MultipleSelection'
+      },
+      {
+        'title': '表格动态行',
+        'key': 'dynamicTable',
+        'icon': '',
+        'component': 'assembly/DynamicTable'
+      },
+      {
+        'title': '待办/已办/草稿',
+        'key': 'dealEvent',
+        'icon': '',
+        'component': 'assembly/DealEvent'
       }
     ]
   }

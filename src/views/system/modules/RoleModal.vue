@@ -132,10 +132,11 @@ export default {
     edit (record) {
       if (record.id) {
         getRolePermIds(record.id).then(res => {
-          const pidSet = new Set(res.map(m => m.parentId).filter(id => id > 0))
+          const pidSet = new Set(res.data.map(m => m.parentId).filter(id => id !== '000000'))
           this.pidSet = pidSet
           // 因为antd 树插件勾选父节点会导致所有子节点选中,所以过滤所有父节点
-          this.checkedKeys = res.map(m => m.menuId).filter(id => !pidSet.has(id))
+          this.checkedKeys = res.data.map(m => m.id).filter(id => !pidSet.has(id))
+          console.log(res, 'res')
         })
       }
       this.mdl = Object.assign({}, record)
@@ -158,12 +159,10 @@ export default {
     },
     onCheck (checkedKeys, info) {
       if (!this.treeCheck) this.treeCheck = true
-      console.log('onCheck', info)
       this.checkedKeys = checkedKeys
       this.halfCheckedKeys = info.halfCheckedKeys
     },
     onSelect (selectedKeys, info) {
-      console.log('onSelect', info)
       this.selectedKeys = selectedKeys
     },
     loadPermissions () {
@@ -196,11 +195,12 @@ export default {
       this.form.validateFields((err, values) => {
         // 验证表单没错误
         if (!err) {
-          values.memberIds = checkedAll
+          values.resourceIds = checkedAll
           _this.confirmLoading = true
           if (!values.id) {
             delete values.id
           }
+          console.log(values, 'value')
           saveRole(Object.assign(values)).then(res => {
             if (res.code === 20000) {
               _this.$message.success(res.message)
