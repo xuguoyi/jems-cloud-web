@@ -1,6 +1,5 @@
 <template>
   <div class="main">
-    <deal-event />
     <a-form
       id="formLogin"
       class="user-layout-login"
