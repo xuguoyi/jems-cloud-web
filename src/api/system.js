@@ -5,6 +5,7 @@ const api = {
   role: '/system/role',
   permission: '/system/resources',
   dept: '/system/dept',
+  group: '/system/group',
   dictType: '/system/dict/type',
   dictData: '/system/dict/data',
   dist: '/system/districts',
@@ -148,6 +149,42 @@ export function delPerm (deptId) {
   })
 }
 
+// group
+export function getGroupList (parameter) {
+  const { pageNum, pageSize, ...queryObj } = parameter
+  return axios({
+    // url: api.group + '/select/user/9999',
+    // url: api.group + `/page/${pageNum}/${pageSize}`,
+    url: api.group + '/page/1/10',
+    method: 'post',
+    params: queryObj
+  })
+}
+export function getRoleGroupIds (roleId) {
+  return axios({
+    url: api.group + '/role/' + `${roleId}`,
+    method: 'get'
+  })
+}
+export function saveGroup (parameter) {
+  const isUpdate = !!parameter.id
+  return axios({
+    url: api.group + (isUpdate ? `/update/user/${parameter.id}` : '/insert'),
+    method: isUpdate ? 'put' : 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+export function delGroup (parameter) {
+  return axios({
+    url: api.group + '/delete/' + `${parameter.ids}`,
+    method: 'delete'
+  })
+}
+
 // dept
 export function getDeptList (parameter) {
   return axios({
@@ -282,10 +319,11 @@ export function saveConfig (parameter) {
   })
 }
 export function delConfig (parameter) {
+  console.log(parameter.ids, 'parameter')
   return axios({
     url: api.config + `/delete/${parameter.ids}`,
     method: 'delete',
-    params: parameter
+    params: parameter.ids
   })
 }
 // oss

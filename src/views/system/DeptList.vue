@@ -4,22 +4,22 @@
       <a-form layout="inline">
         <a-row :gutter="48">
           <a-col :md="5" :sm="15">
-            <a-form-item label="部门名称" >
-              <a-input placeholder="请输入" v-model="queryParam.deptName"/>
+            <a-form-item label="组群名称" >
+              <a-input placeholder="请输入" v-model="queryParam.filter_EQ_detail"/>
             </a-form-item>
           </a-col>
           <a-col :md="5" :sm="15">
-            <a-form-item label="状态">
-              <a-select placeholder="请选择" v-model="queryParam.status">
+            <a-form-item label="显示状态">
+              <a-select placeholder="请选择" v-model="queryParam.filter_EQ_isAvailable">
                 <a-select-option value="">全部</a-select-option>
-                <a-select-option value="0">正常</a-select-option>
-                <a-select-option value="1">停用</a-select-option>
+                <a-select-option value="Y">Y</a-select-option>
+                <a-select-option value="N">N</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="24">
             <span class="table-page-search-submitButtons">
-              <a-button type="primary" @click="this.fetch">查询</a-button>
+              <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
               <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
             </span>
           </a-col>
@@ -28,39 +28,42 @@
     </div>
     <div class="table-operator">
       <a-button v-if="addEnable" type="primary" icon="plus" @click="$refs.modal.add()">新建</a-button>
+      <a-dropdown v-if="removeEnable && selectedRowKeys.length > 0">
+        <a-button type="danger" icon="delete" @click="delByIds(idArr)">删除</a-button>
+      </a-dropdown>
     </div>
-    <a-table
+    <s-table
+      ssize="default"
       ref="table"
-      rowKey="deptId"
-      :pagination="pagination"
-      :loading="loading"
+      rowKey="configId"
+      :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
       :columns="columns"
-      :dataSource="data">
+      :data="loadData">
 
-      <span slot="menuType" slot-scope="text">
-        {{ text | menuTypeFilter }}
+      <span slot="configType" slot-scope="text">
+        {{ text | typeFilter }}
       </span>
-
-      <span slot="status" slot-scope="text">
-        {{ text | statusFilter }}
+      <span slot="configValue" slot-scope="text">
+        <ellipsis :length="30" tooltip>{{ text }}</ellipsis>
       </span>
-
+      <span slot="remark" slot-scope="text">
+        <ellipsis :length="30" tooltip>{{ text }}</ellipsis>
+      </span>
       <span slot="action" slot-scope="text, record">
         <a v-if="editEnabel" @click="handleEdit(record)">编辑</a>
         <a-divider type="vertical" />
-        <a v-if="addEnable" @click="handleAdd(record.deptId+'')">新增</a>
-        <a-divider type="vertical" />
-        <a v-if="removeEnable" @click="delById(record.deptId)">删除</a>
+        <a v-if="removeEnable" @click="delByIds([record.id])">删除</a>
       </span>
-    </a-table>
+    </s-table>
 
     <dept-modal ref="modal" @ok="handleOk"/>
   </a-card>
 </template>
 
 <script>
+import { STable, Ellipsis } from '@/components'
 import { Table as T } from 'ant-design-vue'
-import { getDeptList, delDept } from '@/api/system'
+import { getGroupList, delGroup } from '@/api/system'
 import DeptModal from './modules/DeptModal.vue'
 import { treeData } from '@/utils/treeutil'
 import { checkPermission } from '@/utils/permissions'
@@ -68,7 +71,9 @@ export default {
   name: 'TableList',
   components: {
     T,
-    DeptModal
+    DeptModal,
+    STable,
+    Ellipsis
   },
   data () {
     return {
@@ -92,17 +97,16 @@ export default {
       // 表头
       columns: [
         {
-          title: '权限名称',
-          dataIndex: 'deptName'
+          title: '群组名称',
+          dataIndex: 'detail'
         },
         {
-          title: '排序',
-          dataIndex: 'orderNum'
+          title: '可用',
+          dataIndex: 'isAvailable'
         },
         {
-          title: '状态',
-          dataIndex: 'status',
-          scopedSlots: { customRender: 'status' }
+          title: '显示',
+          dataIndex: 'isHidden'
         },
         {
           title: '创建时间',
@@ -115,7 +119,24 @@ export default {
           scopedSlots: { customRender: 'action' }
         }
       ],
-      data: [],
+      range: null,
+      loadData: parameter => {
+        const queryParam = { ...this.queryParam }
+        if (this.queryParam.filter_EQ_isAvailable === '') {
+          delete queryParam.filter_EQ_isAvailable
+        }
+        return getGroupList(Object.assign(parameter, queryParam))
+          .then(res => {
+            const data = res.data
+            data.pageNum = parameter.pageNum
+            data.data = data.data.map(item => {
+              return { ...item, status: `${item.status}` }
+            })
+            return data
+          })
+      },
+      selectedRowKeys: [],
+      selectedRows: [],
       pagination: false,
       loading: false,
       addEnable: checkPermission('system:dept:add'),
@@ -140,10 +161,22 @@ export default {
       return menuMap[type]
     }
   },
-  created () {
-    this.fetch()
+  computed: {
+    idArr () {
+      const idArr = []
+      this.selectedRows.forEach(item => {
+        idArr.push(item.id)
+      })
+      return idArr
+    }
   },
   methods: {
+    onSelectChange (selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
+      console.log(this.selectedRowKeys)
+      console.log(this.selectedRows)
+    },
     handleAdd (parentId) {
       this.$refs.modal.add(parentId)
     },
@@ -151,26 +184,43 @@ export default {
       this.$refs.modal.edit(record)
     },
     handleOk () {
-      this.fetch()
+      this.$refs.table.refresh(true)
     },
-    delById (id) {
-      delDept(id).then(res => {
-        if (res.code === 0) {
-          this.$message.success(`删除成功`)
+    delByIds (ids) {
+      delGroup({ ids: ids.join(',') }).then(res => {
+        if (res.code === 20000) {
+          this.$message.success(res.message)
           this.handleOk()
         } else {
-          this.$message.error(res.msg)
+          this.$message.error(res.message)
         }
       })
-    },
-    fetch () {
-      this.loading = true
-      getDeptList(Object.assign(this.queryParam)).then(res => {
-        this.data = treeData(res.rows, 'deptId')
-        this.loading = false
-        console.log(this.data)
-      })
+      this.selectedRowKeys = []
     }
+    // fetch (parameter) {
+    //   this.loading = true
+    //   const queryParam = { ...this.queryParam }
+    //   if (this.queryParam.filter_EQ_configType === '') {
+    //     delete queryParam.filter_EQ_configType
+    //   }
+    //   getGroupList(Object.assign(parameter, queryParam)).then(res => {
+    //     if (res.code === 20000) {
+    //       // this.data = treeData(res.data, 'id')
+    //       // this.loading = false
+    //       // console.log(this.data)
+    //       const queryParam = { ...this.queryParam }
+    //       if (this.queryParam.filter_EQ_configType === '') {
+    //         delete queryParam.filter_EQ_configType
+    //       }
+    //       const data = res.data
+    //       data.pageNum = parameter.pageNum
+    //       data.data = data.data.map(item => {
+    //         return { ...item, status: `${item.status}` }
+    //       })
+    //       return data
+    //     }
+    //   })
+    // }
   },
   watch: {
     /*

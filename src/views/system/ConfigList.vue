@@ -39,7 +39,7 @@
     <div class="table-operator">
       <a-button v-if="addEnable" type="primary" icon="plus" @click="$refs.modal.add()">新建</a-button>
       <a-dropdown v-if="removeEnable && selectedRowKeys.length > 0">
-        <a-button type="danger" icon="delete" @click="delByIds(selectedRowKeys)">删除</a-button>
+        <a-button type="danger" icon="delete" @click="delByIds(idArr)">删除</a-button>
       </a-dropdown>
     </div>
     <s-table
@@ -180,6 +180,15 @@ export default {
 
   },
   created () {
+  },
+  computed: {
+    idArr () {
+      const idArr = []
+      this.selectedRows.forEach(item => {
+        idArr.push(item.id)
+      })
+      return idArr
+    }
   },
   methods: {
     onSelectChange (selectedRowKeys, selectedRows) {
