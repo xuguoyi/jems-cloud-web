@@ -272,7 +272,6 @@ export default {
 
 <style lang="less" scoped>
   .deal-event {
-    width: 800px;
     .anticon-user {
       color: #3c9ffe;
       font-size: 16px;
