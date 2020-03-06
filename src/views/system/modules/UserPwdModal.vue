@@ -75,7 +75,7 @@ export default {
           console.log('Received values of form: ', values)
           this.confirmLoading = true
           resetPwd(values).then(res => {
-            if (res.code === 0) {
+            if (res.code === 20000) {
               this.$message.success(`${values.userName}` + '重置密码成功')
               // this.$emit('ok')
               this.visible = false
