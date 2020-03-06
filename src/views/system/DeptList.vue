@@ -9,7 +9,7 @@
             </a-form-item>
           </a-col>
           <a-col :md="5" :sm="15">
-            <a-form-item label="显示状态">
+            <a-form-item label="可用状态">
               <a-select placeholder="请选择" v-model="queryParam.filter_EQ_isAvailable">
                 <a-select-option value="">全部</a-select-option>
                 <a-select-option value="Y">Y</a-select-option>
