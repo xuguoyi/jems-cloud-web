@@ -15,7 +15,6 @@
       </template>
     </a-table>
     <a-button type="primary" icon="plus" @click="handleAdd"></a-button>
-    <a-button type="primary" @click="saveAdd" style="position: relative;left: 50px">Save</a-button>
   </div>
 </template>
 

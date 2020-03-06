@@ -1,6 +1,11 @@
 <template>
   <div class="deal-event">
-    <a-table :columns="columns" :dataSource="tableData" bordered @change="onChange" :pagination="pagination">
+    <a-table
+      :columns="columns"
+      :dataSource="tableData"
+      bordered
+      @change="onChange"
+      :pagination="pagination">
       <template slot="subject" slot-scope="text, record, index">
         <a href="javascript:;">{{ text }}</a>
       </template>
@@ -272,6 +277,9 @@ export default {
 
 <style lang="less" scoped>
   .deal-event {
+    ::v-deep .ant-table {
+      font-size: 12px!important;
+    }
     .anticon-user {
       color: #3c9ffe;
       font-size: 16px;

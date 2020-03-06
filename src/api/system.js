@@ -169,7 +169,7 @@ export function getRoleGroupIds (roleId) {
 export function saveGroup (parameter) {
   const isUpdate = !!parameter.id
   return axios({
-    url: api.group + (isUpdate ? `/update/user/${parameter.id}` : '/insert'),
+    url: api.group + (isUpdate ? `/update/${parameter.id}` : '/insert'),
     method: isUpdate ? 'put' : 'post',
     data: parameter,
     headers: {

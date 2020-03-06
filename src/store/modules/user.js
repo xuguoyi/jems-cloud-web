@@ -60,7 +60,6 @@ const user = {
       return new Promise((resolve, reject) => {
         // debugger
         getInfo().then(response => {
-          // debugger
           const result = response.data
           if (result.roleIds) {
             commit('SET_ROLES', result.roleIds)

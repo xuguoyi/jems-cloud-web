@@ -1,6 +1,7 @@
 <template>
   <div>
-    <dynamic-table :columns="columns" v-model="dynamicTableData"/>
+    <dynamic-table ref="dynamicTable" :columns="columns" v-model="dynamicTableData"/>
+    <a-button @click="submit">提交</a-button>
   </div>
 </template>
 <script>
@@ -58,6 +59,11 @@ export default {
   },
   components: {
     DynamicTable
+  },
+  methods: {
+    submit () {
+      this.$refs.dynamicTable.saveAdd()
+    }
   }
 }
 </script>

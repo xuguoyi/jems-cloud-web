@@ -447,6 +447,12 @@ const menus = [
         'component': 'assembly/DynamicTable'
       },
       {
+        'title': '动态模块',
+        'key': 'dynamicExample',
+        'icon': '',
+        'component': 'assembly/DynamicExample'
+      },
+      {
         'title': '待办/已办/草稿',
         'key': 'dealEvent',
         'icon': '',

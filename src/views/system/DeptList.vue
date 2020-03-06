@@ -144,23 +144,6 @@ export default {
       removeEnable: checkPermission('system:dept:remove')
     }
   },
-  filters: {
-    statusFilter (status) {
-      const statusMap = {
-        '1': '停用',
-        '0': '正常'
-      }
-      return statusMap[status]
-    },
-    menuTypeFilter (type) {
-      const menuMap = {
-        'M': '目录',
-        'F': '按钮',
-        'C': '菜单'
-      }
-      return menuMap[type]
-    }
-  },
   computed: {
     idArr () {
       const idArr = []
@@ -197,44 +180,6 @@ export default {
       })
       this.selectedRowKeys = []
     }
-    // fetch (parameter) {
-    //   this.loading = true
-    //   const queryParam = { ...this.queryParam }
-    //   if (this.queryParam.filter_EQ_configType === '') {
-    //     delete queryParam.filter_EQ_configType
-    //   }
-    //   getGroupList(Object.assign(parameter, queryParam)).then(res => {
-    //     if (res.code === 20000) {
-    //       // this.data = treeData(res.data, 'id')
-    //       // this.loading = false
-    //       // console.log(this.data)
-    //       const queryParam = { ...this.queryParam }
-    //       if (this.queryParam.filter_EQ_configType === '') {
-    //         delete queryParam.filter_EQ_configType
-    //       }
-    //       const data = res.data
-    //       data.pageNum = parameter.pageNum
-    //       data.data = data.data.map(item => {
-    //         return { ...item, status: `${item.status}` }
-    //       })
-    //       return data
-    //     }
-    //   })
-    // }
-  },
-  watch: {
-    /*
-      'selectedRows': function (selectedRows) {
-        this.needTotalList = this.needTotalList.map(item => {
-          return {
-            ...item,
-            total: selectedRows.reduce( (sum, val) => {
-              return sum + val[item.dataIndex]
-            }, 0)
-          }
-        })
-      }
-      */
   }
 }
 </script>
