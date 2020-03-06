@@ -109,7 +109,8 @@ export const generatorDynamicRouter = () => {
     getRouterByUser().then(res => {
       const rootMenu = getRootMenu(res.data)
       const routers = generator(rootMenu)
-      // console.log('routers', routers)
+      console.log('rootMenu', rootMenu)
+      console.log('routers', routers)
       routers.push(notFoundRouter)
       resolve(routers)
     }).catch(err => {
@@ -169,8 +170,6 @@ export function getRootMenu (rows) {
   const rootMenu = []
   const arr = []
   buildtree(rows, arr, '000000')
-  const rowss = rows.slice(0, 25)
-  buildtree(rowss, arr, '000000')
   arr.forEach(row => {
     menus.push(row)
   })
